@@ -1,5 +1,6 @@
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
+from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.utils.decorators import apply_defaults
 
 class StageToRedshiftOperator(BaseOperator):
@@ -15,18 +16,7 @@ class StageToRedshiftOperator(BaseOperator):
         {}
     """
     @apply_defaults
-    def __init__(self,
-                 redshift_conn_id="",
-                 aws_credentails_id="",
-                 s3_bucket="",
-                 s3_key="",
-                 file_formate="",
-                 region="",
-                 table="",
-                 json_path="auto",
-                 ignore_headers=1,
-                 delimiter=","
-                 *args, **kwargs):
+    def __init__(self,redshift_conn_id="",aws_credentails_id="",s3_bucket="",s3_key="",file_formate="",region="",table="",json_path="auto",ignore_headers=1,delimiter=",",*args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id,
@@ -41,7 +31,6 @@ class StageToRedshiftOperator(BaseOperator):
         self.json_path = json_path
         
     def execute(self, context):
-        
         aws_hook=AwsHook(self.redshift_conn_id)
         aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
@@ -59,10 +48,5 @@ class StageToRedshiftOperator(BaseOperator):
             credentials.secret_key,
             self.region,
             file_processing
-            
         )
         redshift.run(sqlstat)
-
-
-
-

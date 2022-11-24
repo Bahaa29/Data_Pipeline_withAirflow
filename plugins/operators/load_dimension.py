@@ -24,5 +24,5 @@ class LoadDimensionOperator(BaseOperator):
     def execute(self, context):
         redshift=AwsHook.PostgresHook(self.redshift_conn_id)
         if self.truncate:
-            redshift.run(f"truncate table{self.table}" 
+            redshift.run(f"truncate table{self.table}") 
         redshift.run(f"insert into {self.table} {self.sql}")
